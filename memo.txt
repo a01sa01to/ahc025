@@ -4,3 +4,10 @@ Score
   Minimum Score: 7793696.00 on 2
   Maximum Score: 71553001.00 on 87
   Standard Deviation: 11458123.66
+
+#2: 乱択して greedy に大きいほうから小さいほうに移動
+Score
+  Average Score: 18212662.48
+  Minimum Score: 852451.00 on 31
+  Maximum Score: 40271126.00 on 86
+  Standard Deviation: 8161506.68
