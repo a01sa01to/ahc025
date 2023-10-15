@@ -11,7 +11,7 @@
 		},
 		"ghcr.io/devcontainers/features/python:1": {
 			"installTools": true,
-			"version": "latest"
+			"version": "3.11"
 		},
 		"ghcr.io/devcontainers/features/rust:1": {
 			"version": "latest",

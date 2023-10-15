@@ -1,0 +1,6 @@
+#1: i mod d
+Score
+  Average Score: 26090691.09
+  Minimum Score: 7793696.00 on 2
+  Maximum Score: 71553001.00 on 87
+  Standard Deviation: 11458123.66
