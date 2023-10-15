@@ -53,6 +53,60 @@ fn query(
     (res, false)
 }
 
+fn merge_sort(
+    ordered: &mut Vec<usize>,
+    q: usize,
+    source: &mut LineSource<BufReader<StdinLock<'_>>>,
+) -> Vec<usize> {
+    if ordered.len() == 1 {
+        return ordered.clone();
+    }
+
+    let mut l = Vec::<usize>::new();
+    let mut r = Vec::<usize>::new();
+    for i in 0..ordered.len() {
+        if i < ordered.len() / 2 {
+            l.push(ordered[i]);
+        } else {
+            r.push(ordered[i]);
+        }
+    }
+
+    let l = merge_sort(&mut l, q, source);
+    let r = merge_sort(&mut r, q, source);
+
+    let mut res = Vec::<usize>::new();
+    let mut i = 0;
+    let mut j = 0;
+    while i < l.len() || j < r.len() {
+        if i == l.len() {
+            res.push(r[j]);
+            j += 1;
+            continue;
+        }
+        if j == r.len() {
+            res.push(l[i]);
+            i += 1;
+            continue;
+        }
+
+        let mut l2 = Vec::<usize>::new();
+        let mut r2 = Vec::<usize>::new();
+        l2.push(l[i]);
+        r2.push(r[j]);
+        let res2 = query(&l2, &r2, q, source);
+        if res2.0 == '<' {
+            res.push(l[i]);
+            i += 1;
+        } else {
+            res.push(r[j]);
+            j += 1;
+        }
+    }
+
+    res
+}
+
 fn main() {
     let mut rng = rand::thread_rng();
     let stdin = stdin();
@@ -65,9 +119,22 @@ fn main() {
         q: usize,
     };
 
+    let mut ordered_idx = vec![0; n];
+    for i in 0..n {
+        ordered_idx[i] = i;
+    }
+    ordered_idx = merge_sort(&mut ordered_idx, q, &mut source);
+    println!("# {:?}", ordered_idx);
+
     let mut ans = vec![0; n];
     for i in 0..n {
-        ans[i] = i % d;
+        let idx_temp = i % (2 * d);
+        let idx = if idx_temp < d {
+            idx_temp
+        } else {
+            2 * d - idx_temp - 1
+        };
+        ans[ordered_idx[n - i - 1]] = idx;
     }
     let mut non_changable = HashSet::<usize>::new();
 
