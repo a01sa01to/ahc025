@@ -1,8 +1,39 @@
 use proconio::{input, source::line::LineSource};
-use std::io::{stdin, BufReader};
+use std::io::{stdin, BufReader, StdinLock};
 extern crate rand;
 use rand::Rng;
 use std::collections::HashSet;
+
+fn output_answer(ans: &Vec<usize>, is_debug: bool) {
+    if is_debug {
+        print!("#c ");
+    }
+    for i in 0..ans.len() {
+        print!("{} ", ans[i]);
+    }
+    println!();
+}
+
+fn query(
+    l: &Vec<usize>,
+    r: &Vec<usize>,
+    source: &mut LineSource<BufReader<StdinLock<'_>>>,
+) -> char {
+    print!("{} {}", l.len(), r.len());
+    for i in 0..l.len() {
+        print!(" {}", l[i]);
+    }
+    for i in 0..r.len() {
+        print!(" {}", r[i]);
+    }
+    println!();
+
+    input! {
+        from source,
+        res: char,
+    };
+    res
+}
 
 fn main() {
     let mut rng = rand::thread_rng();
@@ -48,19 +79,8 @@ fn main() {
             }
         }
 
-        print!("{} {}", l.len(), r.len());
-        for i in 0..l.len() {
-            print!(" {}", l[i]);
-        }
-        for i in 0..r.len() {
-            print!(" {}", r[i]);
-        }
-        println!();
-
-        input! {
-            from &mut source,
-            res: char,
-        };
+        output_answer(&ans, true);
+        let res = query(&l, &r, &mut source);
         cnt += 1;
 
         if res == '<' {
@@ -74,9 +94,5 @@ fn main() {
             non_changable.insert(i2);
         }
     }
-
-    for i in 0..n {
-        print!("{} ", ans[i]);
-    }
-    println!();
+    output_answer(&ans, false);
 }
