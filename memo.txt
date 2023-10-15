@@ -11,3 +11,10 @@ Score
   Minimum Score: 852451.00 on 31
   Maximum Score: 40271126.00 on 86
   Standard Deviation: 8161506.68
+
+#3: Merge Sort して大きい順に蛇行 greedy
+Score
+  Average Score: 9466309.54
+  Minimum Score: 892651.00 on 22
+  Maximum Score: 49581001.00 on 87
+  Standard Deviation: 7154189.44

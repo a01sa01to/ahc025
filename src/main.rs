@@ -139,47 +139,54 @@ fn main() {
     let mut non_changable = HashSet::<usize>::new();
 
     loop {
-        if non_changable.len() == n {
-            println!("1 1 0 1");
-            continue;
-        }
-
-        let i1 = rng.gen_range(0..n);
-        let i2 = rng.gen_range(0..n);
-        if ans[i1] == ans[i2] {
-            continue;
-        }
-        if non_changable.contains(&i1) || non_changable.contains(&i2) {
-            continue;
-        }
-        let mut l = Vec::<usize>::new();
-        let mut r = Vec::<usize>::new();
-        for i in 0..n {
-            if ans[i] == ans[i1] {
-                l.push(i);
-            }
-            if ans[i] == ans[i2] {
-                r.push(i);
-            }
-        }
-
-        output_answer(&ans, true);
-        let res = query(&l, &r, q, &mut source);
-        if res.1 {
-            // query limit exceeded
+        let query = query(&vec![0], &vec![1], q, &mut source);
+        if query.1 {
             break;
         }
-
-        if res.0 == '<' {
-            ans[i2] = ans[i1];
-        }
-        if res.0 == '>' {
-            ans[i1] = ans[i2];
-        }
-        if res.0 == '=' {
-            non_changable.insert(i1);
-            non_changable.insert(i2);
-        }
     }
+
+    // loop {
+    //     if non_changable.len() == n {
+    //         println!("1 1 0 1");
+    //         continue;
+    //     }
+
+    //     let i1 = rng.gen_range(0..n);
+    //     let i2 = rng.gen_range(0..n);
+    //     if ans[i1] == ans[i2] {
+    //         continue;
+    //     }
+    //     if non_changable.contains(&i1) || non_changable.contains(&i2) {
+    //         continue;
+    //     }
+    //     let mut l = Vec::<usize>::new();
+    //     let mut r = Vec::<usize>::new();
+    //     for i in 0..n {
+    //         if ans[i] == ans[i1] {
+    //             l.push(i);
+    //         }
+    //         if ans[i] == ans[i2] {
+    //             r.push(i);
+    //         }
+    //     }
+
+    //     output_answer(&ans, true);
+    //     let res = query(&l, &r, q, &mut source);
+    //     if res.1 {
+    //         // query limit exceeded
+    //         break;
+    //     }
+
+    //     if res.0 == '<' {
+    //         ans[i2] = ans[i1];
+    //     }
+    //     if res.0 == '>' {
+    //         ans[i1] = ans[i2];
+    //     }
+    //     if res.0 == '=' {
+    //         non_changable.insert(i1);
+    //         non_changable.insert(i2);
+    //     }
+    // }
     output_answer(&ans, false);
 }
