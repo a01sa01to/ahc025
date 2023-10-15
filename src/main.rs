@@ -14,11 +14,24 @@ fn output_answer(ans: &Vec<usize>, is_debug: bool) {
     println!();
 }
 
+static mut CNT: usize = 0;
 fn query(
     l: &Vec<usize>,
     r: &Vec<usize>,
+    q: usize,
     source: &mut LineSource<BufReader<StdinLock<'_>>>,
-) -> char {
+) -> (char, bool) {
+    let mut rng = rand::thread_rng();
+
+    if unsafe { CNT } >= q {
+        let i = rng.gen_range(0..2);
+        if i == 0 {
+            return ('<', true);
+        } else {
+            return ('>', true);
+        }
+    }
+
     print!("{} {}", l.len(), r.len());
     for i in 0..l.len() {
         print!(" {}", l[i]);
@@ -32,7 +45,12 @@ fn query(
         from source,
         res: char,
     };
-    res
+
+    unsafe {
+        CNT += 1;
+    }
+
+    (res, false)
 }
 
 fn main() {
@@ -53,8 +71,7 @@ fn main() {
     }
     let mut non_changable = HashSet::<usize>::new();
 
-    let mut cnt = 0;
-    while cnt < q {
+    loop {
         if non_changable.len() == n {
             println!("1 1 0 1");
             continue;
@@ -80,16 +97,19 @@ fn main() {
         }
 
         output_answer(&ans, true);
-        let res = query(&l, &r, &mut source);
-        cnt += 1;
+        let res = query(&l, &r, q, &mut source);
+        if res.1 {
+            // query limit exceeded
+            break;
+        }
 
-        if res == '<' {
+        if res.0 == '<' {
             ans[i2] = ans[i1];
         }
-        if res == '>' {
+        if res.0 == '>' {
             ans[i1] = ans[i2];
         }
-        if res == '=' {
+        if res.0 == '=' {
             non_changable.insert(i1);
             non_changable.insert(i2);
         }
