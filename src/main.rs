@@ -119,11 +119,19 @@ fn main() {
         q: usize,
     };
 
+    // ordered_idx[i] : i 番目に小さいものの index
     let mut ordered_idx = vec![0; n];
     for i in 0..n {
         ordered_idx[i] = i;
     }
     ordered_idx = merge_sort(&mut ordered_idx, q, &mut source);
+
+    // idx_order[i] : i が何番目に小さいか
+    let mut idx_order = vec![0; n];
+    for i in 0..n {
+        idx_order[ordered_idx[i]] = i;
+    }
+
     println!("# {:?}", ordered_idx);
 
     let mut ans = vec![0; n];
@@ -139,54 +147,54 @@ fn main() {
     let mut non_changable = HashSet::<usize>::new();
 
     loop {
-        let query = query(&vec![0], &vec![1], q, &mut source);
-        if query.1 {
+        if non_changable.len() == n {
+            let res = query(&vec![0], &vec![1], q, &mut source);
+            if res.1 {
+                // query limit exceeded
+                break;
+            }
+        }
+
+        let idx = rng.gen_range(0..n);
+        let to = rng.gen_range(0..d);
+        if ans[idx] == to {
+            continue;
+        }
+        if non_changable.contains(&ans[idx]) || non_changable.contains(&to) {
+            continue;
+        }
+        if idx_order[idx] > n / 5 {
+            continue;
+        }
+        let mut l = Vec::<usize>::new();
+        let mut r = Vec::<usize>::new();
+        for i in 0..n {
+            if ans[i] == ans[idx] {
+                l.push(i);
+            }
+            if ans[i] == to {
+                r.push(i);
+            }
+        }
+
+        output_answer(&ans, true);
+        let res = query(&l, &r, q, &mut source);
+        if res.1 {
+            // query limit exceeded
             break;
+        }
+
+        if res.0 == '<' {
+            // do nothing
+        }
+        if res.0 == '>' {
+            ans[idx] = to;
+        }
+        if res.0 == '=' {
+            non_changable.insert(ans[idx]);
+            non_changable.insert(to);
         }
     }
 
-    // loop {
-    //     if non_changable.len() == n {
-    //         println!("1 1 0 1");
-    //         continue;
-    //     }
-
-    //     let i1 = rng.gen_range(0..n);
-    //     let i2 = rng.gen_range(0..n);
-    //     if ans[i1] == ans[i2] {
-    //         continue;
-    //     }
-    //     if non_changable.contains(&i1) || non_changable.contains(&i2) {
-    //         continue;
-    //     }
-    //     let mut l = Vec::<usize>::new();
-    //     let mut r = Vec::<usize>::new();
-    //     for i in 0..n {
-    //         if ans[i] == ans[i1] {
-    //             l.push(i);
-    //         }
-    //         if ans[i] == ans[i2] {
-    //             r.push(i);
-    //         }
-    //     }
-
-    //     output_answer(&ans, true);
-    //     let res = query(&l, &r, q, &mut source);
-    //     if res.1 {
-    //         // query limit exceeded
-    //         break;
-    //     }
-
-    //     if res.0 == '<' {
-    //         ans[i2] = ans[i1];
-    //     }
-    //     if res.0 == '>' {
-    //         ans[i1] = ans[i2];
-    //     }
-    //     if res.0 == '=' {
-    //         non_changable.insert(i1);
-    //         non_changable.insert(i2);
-    //     }
-    // }
     output_answer(&ans, false);
 }

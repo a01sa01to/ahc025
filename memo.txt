@@ -18,3 +18,10 @@ Score
   Minimum Score: 892651.00 on 22
   Maximum Score: 49581001.00 on 87
   Standard Deviation: 7154189.44
+
+#4: #3 で初期解生成したら、小さいもの n/5 個をランダムに移動させる
+Score
+  Average Score: 7638635.89
+  Minimum Score: 141901.00 on 75
+  Maximum Score: 48891408.00 on 57
+  Standard Deviation: 6792175.67
