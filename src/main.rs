@@ -195,7 +195,7 @@ fn main() {
                 }
                 cnt += 1;
                 // 後になるほどより小さいものを選びたい
-                if cnt >= 3 + (3 * unsafe { CNT } / q) {
+                if cnt >= (6 * unsafe { CNT } / q) {
                     break;
                 }
             }
