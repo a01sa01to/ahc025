@@ -188,15 +188,22 @@ fn main() {
 
         let mut new_ordered = Vec::<usize>::new();
         let mut todo_vec = Vec::<usize>::new();
+        for i in 0..d {
+            if ordered_idx[i] == minim_idx || ordered_idx[i] == maxim_idx {
+                continue;
+            }
+            todo_vec.push(ordered_idx[i]);
+        }
+
         // sort minim
         {
             let mut l = 0;
-            let mut r = d - 1;
+            let mut r = todo_vec.len();
             while r - l > 1 {
                 let mid = (l + r) / 2;
                 let mut midvec = Vec::<usize>::new();
                 for i in 0..n {
-                    if ans[i] == ordered_idx[mid] {
+                    if ans[i] == todo_vec[mid] {
                         midvec.push(i);
                     }
                 }
@@ -212,18 +219,14 @@ fn main() {
                 }
             }
             for i in 0..l {
-                if ordered_idx[i] == minim_idx || ordered_idx[i] == maxim_idx {
-                    continue;
-                }
-                new_ordered.push(ordered_idx[i]);
+                new_ordered.push(todo_vec[i]);
             }
             new_ordered.push(minim_idx);
-            for i in l..ordered_idx.len() {
-                if ordered_idx[i] == minim_idx || ordered_idx[i] == maxim_idx {
-                    continue;
-                }
-                todo_vec.push(ordered_idx[i]);
+            let mut todo_tmp = Vec::<usize>::new();
+            for i in l..todo_vec.len() {
+                todo_tmp.push(todo_vec[i]);
             }
+            swap(&mut todo_vec, &mut todo_tmp);
         }
         // sort maxim
         {
@@ -249,17 +252,11 @@ fn main() {
                 }
             }
             for i in 0..l {
-                if todo_vec[i] == maxim_idx || todo_vec[i] == minim_idx {
-                    continue;
-                }
-                new_ordered.push(ordered_idx[i]);
+                new_ordered.push(todo_vec[i]);
             }
             new_ordered.push(maxim_idx);
             for i in l..todo_vec.len() {
-                if ordered_idx[i] == maxim_idx || ordered_idx[i] == minim_idx {
-                    continue;
-                }
-                new_ordered.push(ordered_idx[i]);
+                new_ordered.push(todo_vec[i]);
             }
         }
         swap(&mut ordered_idx, &mut new_ordered);
