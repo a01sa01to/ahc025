@@ -39,3 +39,10 @@ Score
   Minimum Score: 253311.00 on 19
   Maximum Score: 20438788.00 on 16
   Standard Deviation: 3569175.45
+
+#7: あらかじめ初期解をシャッフル + バグ修正
+Score
+  Average Score: 3118245.56
+  Minimum Score: 285801.00 on 94
+  Maximum Score: 14752612.00 on 76
+  Standard Deviation: 2805540.98
