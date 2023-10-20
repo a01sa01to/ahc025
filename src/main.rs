@@ -4,7 +4,7 @@ use std::{
     mem::swap,
 };
 extern crate rand;
-use rand::Rng;
+use rand::{seq::SliceRandom, Rng};
 
 fn output_answer(ans: &Vec<usize>, is_debug: bool) {
     if is_debug {
@@ -132,6 +132,7 @@ fn main() {
     for i in 0..n {
         ans[i] = i % d;
     }
+    ans.shuffle(&mut rng);
 
     // ordered_idx[i] : i 番目に小さいものの index
     let mut ordered_idx = vec![0; d];
