@@ -25,3 +25,10 @@ Score
   Minimum Score: 141901.00 on 75
   Maximum Score: 48891408.00 on 57
   Standard Deviation: 6792175.67
+
+#5: グループごとにソート・最大 G から最小 G に 1 つずつ移動させる
+Score
+  Average Score: 4898453.73
+  Minimum Score: 349392.00 on 56
+  Maximum Score: 24076657.00 on 83
+  Standard Deviation: 3941885.04

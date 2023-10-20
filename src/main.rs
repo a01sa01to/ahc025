@@ -5,7 +5,6 @@ use std::{
 };
 extern crate rand;
 use rand::Rng;
-use std::collections::HashSet;
 
 fn output_answer(ans: &Vec<usize>, is_debug: bool) {
     if is_debug {
@@ -142,10 +141,10 @@ fn main() {
     ordered_idx = merge_sort(&mut ordered_idx, q, &ans, &mut source);
 
     println!("# {:?}", ordered_idx);
-    let mut non_changable = HashSet::<usize>::new();
+    let mut maximum_idx = d - 1;
 
     loop {
-        if non_changable.len() == n {
+        if maximum_idx == 0 {
             let res = query(&vec![0], &vec![1], q, &mut source);
             if res.1 {
                 // query limit exceeded
@@ -158,14 +157,50 @@ fn main() {
             if ans[i] == ordered_idx[0] {
                 minim.push(i);
             }
-            if ans[i] == ordered_idx[d - 1] {
+            if ans[i] == ordered_idx[maximum_idx] {
                 maxim.push(i);
             }
         }
+        if maxim.len() <= 1 {
+            maximum_idx -= 1;
+            continue;
+        }
 
-        let idx = rng.gen_range(0..maxim.len());
+        let idx = {
+            let mut remaining = Vec::<usize>::new();
+            for i in 0..maxim.len() {
+                remaining.push(i);
+            }
+            let mut min = {
+                let idx = rng.gen_range(0..remaining.len());
+                remaining.remove(idx);
+                idx
+            };
+            let mut cnt = 0;
+            loop {
+                if remaining.len() == 0 {
+                    break;
+                }
+                let other_idx = rng.gen_range(0..remaining.len());
+                let other = remaining[other_idx];
+                remaining.remove(other_idx);
+                let res = query(&vec![maxim[min]], &vec![maxim[other]], q, &mut source);
+                if res.1 {
+                    // query limit exceeded
+                    break;
+                }
+                if res.0 == '>' {
+                    min = other;
+                }
+                cnt += 1;
+                if cnt >= 3 {
+                    break;
+                }
+            }
+            min
+        };
         let mut minim_idx = ordered_idx[0];
-        let mut maxim_idx = ordered_idx[d - 1];
+        let mut maxim_idx = ordered_idx[maximum_idx];
         ans[maxim[idx]] = minim_idx;
         minim.push(maxim[idx]);
         maxim.remove(idx);
@@ -176,10 +211,6 @@ fn main() {
         if res.1 {
             // query limit exceeded
             break;
-        }
-        if res.0 == '=' {
-            non_changable.insert(minim_idx);
-            non_changable.insert(maxim_idx);
         }
         if res.0 == '>' {
             swap(&mut minim, &mut maxim);
