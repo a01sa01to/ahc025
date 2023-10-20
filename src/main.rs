@@ -1,5 +1,8 @@
 use proconio::{input, source::line::LineSource};
-use std::io::{stdin, BufReader, StdinLock};
+use std::{
+    io::{stdin, BufReader, StdinLock},
+    mem::swap,
+};
 extern crate rand;
 use rand::Rng;
 use std::collections::HashSet;
@@ -56,6 +59,7 @@ fn query(
 fn merge_sort(
     ordered: &mut Vec<usize>,
     q: usize,
+    ans: &Vec<usize>,
     source: &mut LineSource<BufReader<StdinLock<'_>>>,
 ) -> Vec<usize> {
     if ordered.len() == 1 {
@@ -72,8 +76,8 @@ fn merge_sort(
         }
     }
 
-    let l = merge_sort(&mut l, q, source);
-    let r = merge_sort(&mut r, q, source);
+    let l = merge_sort(&mut l, q, ans, source);
+    let r = merge_sort(&mut r, q, ans, source);
 
     let mut res = Vec::<usize>::new();
     let mut i = 0;
@@ -90,11 +94,17 @@ fn merge_sort(
             continue;
         }
 
-        let mut l2 = Vec::<usize>::new();
-        let mut r2 = Vec::<usize>::new();
-        l2.push(l[i]);
-        r2.push(r[j]);
-        let res2 = query(&l2, &r2, q, source);
+        let mut l_vec = Vec::<usize>::new();
+        let mut r_vec = Vec::<usize>::new();
+        for k in 0..ans.len() {
+            if ans[k] == l[i] {
+                l_vec.push(k);
+            }
+            if ans[k] == r[j] {
+                r_vec.push(k);
+            }
+        }
+        let res2 = query(&l_vec, &r_vec, q, source);
         if res2.0 == '<' {
             res.push(l[i]);
             i += 1;
@@ -119,31 +129,19 @@ fn main() {
         q: usize,
     };
 
-    // ordered_idx[i] : i 番目に小さいものの index
-    let mut ordered_idx = vec![0; n];
-    for i in 0..n {
-        ordered_idx[i] = i;
-    }
-    ordered_idx = merge_sort(&mut ordered_idx, q, &mut source);
-
-    // idx_order[i] : i が何番目に小さいか
-    let mut idx_order = vec![0; n];
-    for i in 0..n {
-        idx_order[ordered_idx[i]] = i;
-    }
-
-    println!("# {:?}", ordered_idx);
-
     let mut ans = vec![0; n];
     for i in 0..n {
-        let idx_temp = i % (2 * d);
-        let idx = if idx_temp < d {
-            idx_temp
-        } else {
-            2 * d - idx_temp - 1
-        };
-        ans[ordered_idx[n - i - 1]] = idx;
+        ans[i] = i % d;
     }
+
+    // ordered_idx[i] : i 番目に小さいものの index
+    let mut ordered_idx = vec![0; d];
+    for i in 0..d {
+        ordered_idx[i] = i;
+    }
+    ordered_idx = merge_sort(&mut ordered_idx, q, &ans, &mut source);
+
+    println!("# {:?}", ordered_idx);
     let mut non_changable = HashSet::<usize>::new();
 
     loop {
@@ -154,46 +152,119 @@ fn main() {
                 break;
             }
         }
-
-        let idx = rng.gen_range(0..n);
-        let to = rng.gen_range(0..d);
-        if ans[idx] == to {
-            continue;
-        }
-        if non_changable.contains(&ans[idx]) || non_changable.contains(&to) {
-            continue;
-        }
-        if idx_order[idx] > n / 5 {
-            continue;
-        }
-        let mut l = Vec::<usize>::new();
-        let mut r = Vec::<usize>::new();
+        let mut minim = Vec::<usize>::new();
+        let mut maxim = Vec::<usize>::new();
         for i in 0..n {
-            if ans[i] == ans[idx] {
-                l.push(i);
+            if ans[i] == ordered_idx[0] {
+                minim.push(i);
             }
-            if ans[i] == to {
-                r.push(i);
+            if ans[i] == ordered_idx[d - 1] {
+                maxim.push(i);
             }
         }
 
-        output_answer(&ans, true);
-        let res = query(&l, &r, q, &mut source);
+        let idx = rng.gen_range(0..maxim.len());
+        let mut minim_idx = ordered_idx[0];
+        let mut maxim_idx = ordered_idx[d - 1];
+        ans[maxim[idx]] = minim_idx;
+        minim.push(maxim[idx]);
+        maxim.remove(idx);
+
+        println!("# minim: {:?}", minim);
+        println!("# maxim: {:?}", maxim);
+        let res = query(&minim, &maxim, q, &mut source);
         if res.1 {
             // query limit exceeded
             break;
         }
-
-        if res.0 == '<' {
-            // do nothing
+        if res.0 == '=' {
+            non_changable.insert(minim_idx);
+            non_changable.insert(maxim_idx);
         }
         if res.0 == '>' {
-            ans[idx] = to;
+            swap(&mut minim, &mut maxim);
+            swap(&mut minim_idx, &mut maxim_idx);
         }
-        if res.0 == '=' {
-            non_changable.insert(ans[idx]);
-            non_changable.insert(to);
+
+        let mut new_ordered = Vec::<usize>::new();
+        let mut todo_vec = Vec::<usize>::new();
+        // sort minim
+        {
+            let mut l = 0;
+            let mut r = d - 1;
+            while r - l > 1 {
+                let mid = (l + r) / 2;
+                let mut midvec = Vec::<usize>::new();
+                for i in 0..n {
+                    if ans[i] == ordered_idx[mid] {
+                        midvec.push(i);
+                    }
+                }
+                println!(
+                    "# minim l={} r={} mid={} minim={} maxim={}",
+                    l, r, mid, minim_idx, maxim_idx
+                );
+                let res = query(&minim, &midvec, q, &mut source);
+                if res.0 == '<' {
+                    r = mid;
+                } else {
+                    l = mid;
+                }
+            }
+            for i in 0..l {
+                if ordered_idx[i] == minim_idx || ordered_idx[i] == maxim_idx {
+                    continue;
+                }
+                new_ordered.push(ordered_idx[i]);
+            }
+            new_ordered.push(minim_idx);
+            for i in l..ordered_idx.len() {
+                if ordered_idx[i] == minim_idx || ordered_idx[i] == maxim_idx {
+                    continue;
+                }
+                todo_vec.push(ordered_idx[i]);
+            }
         }
+        // sort maxim
+        {
+            let mut l = 0;
+            let mut r = todo_vec.len();
+            while r - l > 1 {
+                let mid = (l + r) / 2;
+                let mut midvec = Vec::<usize>::new();
+                for i in 0..n {
+                    if ans[i] == todo_vec[mid] {
+                        midvec.push(i);
+                    }
+                }
+                println!(
+                    "# maxim l={} r={} mid={} minim={} maxim={}",
+                    l, r, mid, minim_idx, maxim_idx
+                );
+                let res = query(&maxim, &midvec, q, &mut source);
+                if res.0 == '<' {
+                    r = mid;
+                } else {
+                    l = mid;
+                }
+            }
+            for i in 0..l {
+                if todo_vec[i] == maxim_idx || todo_vec[i] == minim_idx {
+                    continue;
+                }
+                new_ordered.push(ordered_idx[i]);
+            }
+            new_ordered.push(maxim_idx);
+            for i in l..todo_vec.len() {
+                if ordered_idx[i] == maxim_idx || ordered_idx[i] == minim_idx {
+                    continue;
+                }
+                new_ordered.push(ordered_idx[i]);
+            }
+        }
+        swap(&mut ordered_idx, &mut new_ordered);
+
+        output_answer(&ans, true);
     }
 
     output_answer(&ans, false);
