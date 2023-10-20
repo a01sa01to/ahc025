@@ -46,3 +46,10 @@ Score
   Minimum Score: 285801.00 on 94
   Maximum Score: 14752612.00 on 76
   Standard Deviation: 2805540.98
+
+#8: にぶたんの無駄を減らす
+Score
+  Average Score: 2362741.28
+  Minimum Score: 9351.00 on 26
+  Maximum Score: 10179258.00 on 52
+  Standard Deviation: 2255387.84
