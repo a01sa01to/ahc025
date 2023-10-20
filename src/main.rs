@@ -193,7 +193,8 @@ fn main() {
                     min = other;
                 }
                 cnt += 1;
-                if cnt >= 3 {
+                // 後になるほどより小さいものを選びたい
+                if cnt >= 3 + (3 * unsafe { CNT } / q) {
                     break;
                 }
             }
@@ -201,7 +202,8 @@ fn main() {
         };
         let mut minim_idx = ordered_idx[0];
         let mut maxim_idx = ordered_idx[maximum_idx];
-        ans[maxim[idx]] = minim_idx;
+        let swap_idx = maxim[idx];
+        ans[swap_idx] = minim_idx;
         minim.push(maxim[idx]);
         maxim.remove(idx);
 
@@ -210,6 +212,7 @@ fn main() {
         let res = query(&minim, &maxim, q, &mut source);
         if res.1 {
             // query limit exceeded
+            ans[swap_idx] = maxim_idx;
             break;
         }
         if res.0 == '>' {
@@ -293,6 +296,10 @@ fn main() {
         swap(&mut ordered_idx, &mut new_ordered);
 
         output_answer(&ans, true);
+
+        if maxim.len() >= 1 {
+            maximum_idx = d - 1;
+        }
     }
 
     output_answer(&ans, false);

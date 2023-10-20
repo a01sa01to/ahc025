@@ -32,3 +32,10 @@ Score
   Minimum Score: 349392.00 on 56
   Maximum Score: 24076657.00 on 83
   Standard Deviation: 3941885.04
+
+#6: 終盤のほうはなるべく値の小さいもので swap したい
+Score
+  Average Score: 3265582.23
+  Minimum Score: 253311.00 on 19
+  Maximum Score: 20438788.00 on 16
+  Standard Deviation: 3569175.45
