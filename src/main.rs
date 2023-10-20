@@ -234,7 +234,20 @@ fn main() {
         {
             let mut l = 0;
             let mut r = todo_vec.len();
-            while r - l > 1 {
+            if todo_vec.len() > 0 {
+                let mut r_vec = Vec::<usize>::new();
+                for i in 0..n {
+                    if ans[i] == todo_vec[todo_vec.len() - 1] {
+                        r_vec.push(i);
+                    }
+                }
+                let res = query(&maxim, &r_vec, q, &mut source);
+                if res.0 == '>' {
+                    l = todo_vec.len();
+                }
+            }
+
+            while l != r && r - l > 1 {
                 let mid = (l + r) / 2;
                 let mut midvec = Vec::<usize>::new();
                 for i in 0..n {
@@ -267,7 +280,20 @@ fn main() {
         {
             let mut l = 0;
             let mut r = todo_vec.len();
-            while r - l > 1 {
+            if todo_vec.len() > 0 {
+                let mut r_vec = Vec::<usize>::new();
+                for i in 0..n {
+                    if ans[i] == todo_vec[todo_vec.len() - 1] {
+                        r_vec.push(i);
+                    }
+                }
+                let res = query(&maxim, &r_vec, q, &mut source);
+                if res.0 == '>' {
+                    l = todo_vec.len();
+                }
+            }
+
+            while l != r && r - l > 1 {
                 let mid = (l + r) / 2;
                 let mut midvec = Vec::<usize>::new();
                 for i in 0..n {
