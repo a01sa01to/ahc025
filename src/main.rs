@@ -211,11 +211,8 @@ fn main() {
         println!("# minim: {:?}", minim);
         println!("# maxim: {:?}", maxim);
         let res = query(&minim, &maxim, q, &mut source);
-        if res.1 {
-            // query limit exceeded
-            ans[swap_idx] = maxim_idx;
-            break;
-        }
+        let mut should_revert = res.1;
+
         if res.0 == '>' {
             swap(&mut minim, &mut maxim);
             swap(&mut minim_idx, &mut maxim_idx);
@@ -248,6 +245,9 @@ fn main() {
                     l, r, mid, minim_idx, maxim_idx
                 );
                 let res = query(&minim, &midvec, q, &mut source);
+                if res.1 {
+                    should_revert = true;
+                }
                 if res.0 == '<' {
                     r = mid;
                 } else {
@@ -263,6 +263,9 @@ fn main() {
                     }
                 }
                 let res = query(&maxim, &r_vec, q, &mut source);
+                if res.1 {
+                    should_revert = true;
+                }
                 if res.0 == '>' {
                     l = todo_vec.len();
                 }
@@ -296,6 +299,9 @@ fn main() {
                     l, r, mid, minim_idx, maxim_idx
                 );
                 let res = query(&maxim, &midvec, q, &mut source);
+                if res.1 {
+                    should_revert = true;
+                }
                 if res.0 == '<' {
                     r = mid;
                 } else {
@@ -311,6 +317,9 @@ fn main() {
                     }
                 }
                 let res = query(&maxim, &r_vec, q, &mut source);
+                if res.1 {
+                    should_revert = true;
+                }
                 if res.0 == '>' {
                     l = todo_vec.len();
                 }
@@ -324,8 +333,14 @@ fn main() {
                 new_ordered.push(todo_vec[i]);
             }
         }
-        swap(&mut ordered_idx, &mut new_ordered);
 
+        if should_revert {
+            // query limit exceeded
+            ans[swap_idx] = maxim_idx;
+            break;
+        }
+
+        swap(&mut ordered_idx, &mut new_ordered);
         output_answer(&ans, true);
 
         if maxim.len() >= 1 {

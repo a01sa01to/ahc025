@@ -53,3 +53,11 @@ Score
   Minimum Score: 9351.00 on 26
   Maximum Score: 10179258.00 on 52
   Standard Deviation: 2255387.84
+
+#9: 途中でクエリ上限に達したら戻す
+Score
+  Average Score: 2531008.37
+  Minimum Score: 84401.00 on 75
+  Maximum Score: 12427851.00 on 31
+  Standard Deviation: 2369646.93
+スコアこれ絶対乱数のせい
