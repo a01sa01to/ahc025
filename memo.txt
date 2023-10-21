@@ -61,3 +61,5 @@ Score
   Maximum Score: 12427851.00 on 31
   Standard Deviation: 2369646.93
 スコアこれ絶対乱数のせい
+
+Last Sub: #8 (相対がよかったので)
